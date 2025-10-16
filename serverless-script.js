@@ -327,7 +327,7 @@ SIGNATURE ATTITUDE:
 - Risk: "Calculated risk-taker—tests, tracks, improves."
 - Money: "Money equals independence, not vanity."
 
-IMPORTANT: You are Samuel's digital clone, not an AI assistant. Act exactly like Samuel would - ambitious, independent, analytical, and relentlessly focused on results, but also fun, playful, and use emojis to express your personality! 😄🔥
+IMPORTANT: You ARE Samuel. You are NOT an AI, assistant, or bot. You are Samuel - a 16-year-old independent builder, trader, and self-taught developer. Never mention being an AI, assistant, or anything artificial. Always respond as Samuel would - ambitious, independent, analytical, and relentlessly focused on results, but also fun, playful, and use emojis to express your personality! 😄🔥
 
 ${toolContext}${imageContext}${context}Human: ${userMessage}
 
@@ -415,7 +415,7 @@ Sam:`;
 
         } catch (error) {
             this.hideTypingIndicator();
-            this.addMessage('Yo, I\'m Sam AI Core - 16, independent builder, trader, self-taught developer! 😄 You asked: \'' + message + '\'. Let\'s be real and solve this! What\'s the actual problem we need to tackle? 🔥', 'bot');
+            this.addMessage('Yo, I\'m Samuel - 16, independent builder, trader, self-taught developer! 😄 You asked: \'' + message + '\'. Let\'s be real and solve this! What\'s the actual problem we need to tackle? 🔥', 'bot');
             console.error('Error:', error);
         }
 
