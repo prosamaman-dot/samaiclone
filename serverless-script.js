@@ -689,28 +689,11 @@ Sam:`;
     }
 
     scrollToTypingCursor() {
+        // Auto-scroll to bottom like ChatGPT
         const chatMessages = document.getElementById('chat-messages');
-        const typingCursor = chatMessages.querySelector('.typing-cursor');
-        if (typingCursor) {
-            // Get the position of the typing cursor
-            const cursorRect = typingCursor.getBoundingClientRect();
-            const chatRect = chatMessages.getBoundingClientRect();
-            
-            // Check if cursor is visible in the chat area
-            const isVisible = cursorRect.top >= chatRect.top && cursorRect.bottom <= chatRect.bottom;
-            
-            if (!isVisible) {
-                // If cursor is not visible, scroll to it smoothly
-                typingCursor.scrollIntoView({ 
-                    behavior: 'smooth',
-                    block: 'center',
-                    inline: 'nearest'
-                });
-            }
-        } else {
-            // Fallback to latest message if no cursor found
-            this.scrollToLatestMessage();
-        }
+        requestAnimationFrame(() => {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
     }
 
     // Conversation history
