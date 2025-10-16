@@ -224,14 +224,23 @@ class SamAICoreServerless {
         const preview = document.getElementById('image-preview');
         const img = document.getElementById('preview-img');
         
-        img.src = this.imagePreview;
-        preview.style.display = 'block';
+        if (preview && img) {
+            img.src = this.imagePreview;
+            preview.style.display = 'block';
+        }
     }
 
     removeImage() {
         this.imagePreview = null;
-        document.getElementById('image-preview').style.display = 'none';
-        document.getElementById('file-input').value = '';
+        const imagePreview = document.getElementById('image-preview');
+        const fileInput = document.getElementById('file-input');
+        
+        if (imagePreview) {
+            imagePreview.style.display = 'none';
+        }
+        if (fileInput) {
+            fileInput.value = '';
+        }
         this.updateSendButton();
     }
 
@@ -270,13 +279,18 @@ class SamAICoreServerless {
         const activeTool = document.getElementById('active-tool');
         const toolName = document.getElementById('active-tool-name');
         
-        toolName.textContent = this.selectedTool.shortName;
-        activeTool.style.display = 'flex';
+        if (activeTool && toolName && this.selectedTool) {
+            toolName.textContent = this.selectedTool.shortName;
+            activeTool.style.display = 'flex';
+        }
     }
 
     removeTool() {
         this.selectedTool = null;
-        document.getElementById('active-tool').style.display = 'none';
+        const activeToolElement = document.getElementById('active-tool');
+        if (activeToolElement) {
+            activeToolElement.style.display = 'none';
+        }
     }
 
     // Voice recording (placeholder)
@@ -868,13 +882,19 @@ Sam:`;
     showTypingIndicator() {
         if (this.isTyping) return;
         this.isTyping = true;
-        document.getElementById('typing-indicator').style.display = 'flex';
+        const typingIndicator = document.getElementById('typing-indicator');
+        if (typingIndicator) {
+            typingIndicator.style.display = 'flex';
+        }
         this.scrollToBottom();
     }
 
     hideTypingIndicator() {
         this.isTyping = false;
-        document.getElementById('typing-indicator').style.display = 'none';
+        const typingIndicator = document.getElementById('typing-indicator');
+        if (typingIndicator) {
+            typingIndicator.style.display = 'none';
+        }
     }
 
     scrollToBottom() {
