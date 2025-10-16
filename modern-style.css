@@ -93,7 +93,7 @@ body {
 
 .logo h1 {
     font-size: 1.5rem;
-    font-weight: 700;
+    font-weight: 900;
     background: linear-gradient(135deg, var(--accent-color), #ffffff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -104,12 +104,17 @@ body {
     background: #1a1a1a;
     border: 1px solid #333333;
     color: #ffffff;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem;
     border-radius: var(--radius);
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
 }
 
 .clear-btn:hover {
@@ -163,7 +168,7 @@ body {
 
 .welcome-message h2 {
     font-size: 2rem;
-    font-weight: 700;
+    font-weight: 900;
     margin-bottom: 1rem;
     background: linear-gradient(135deg, var(--accent-color), #ffffff);
     -webkit-background-clip: text;
