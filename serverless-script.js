@@ -290,24 +290,25 @@ class SamAICoreServerless {
         try {
             const formattedMessage = `📨 Message from ${fromUser} via Sam AI:\n\n${message}\n\n⏰ ${new Date().toLocaleString()}`;
             
+            // Create form data for Telegram API
+            const formData = new FormData();
+            formData.append('chat_id', this.telegramChatId);
+            formData.append('text', formattedMessage);
+            formData.append('parse_mode', 'HTML');
+            
             const response = await fetch(`https://api.telegram.org/bot${this.telegramBotToken}/sendMessage`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    chat_id: this.telegramChatId,
-                    text: formattedMessage,
-                    parse_mode: 'HTML'
-                })
+                body: formData
             });
 
-            if (!response.ok) {
-                throw new Error(`Telegram API error: ${response.status} ${response.statusText}`);
+            const data = await response.json();
+            console.log('Telegram API Response:', data);
+
+            if (!response.ok || !data.ok) {
+                throw new Error(`Telegram API error: ${data.description || response.statusText}`);
             }
 
-            const data = await response.json();
-            console.log('Message sent to real Sam:', data);
+            console.log('Message sent to real Sam successfully:', data);
             return { success: true, data: data };
             
         } catch (error) {
@@ -356,6 +357,37 @@ class SamAICoreServerless {
         }
         
         return { shouldSend: false, message: null };
+    }
+
+    // Test Telegram connection
+    async testTelegramConnection() {
+        try {
+            const testMessage = `🧪 Test message from Sam AI - ${new Date().toLocaleString()}`;
+            
+            const formData = new FormData();
+            formData.append('chat_id', this.telegramChatId);
+            formData.append('text', testMessage);
+            
+            const response = await fetch(`https://api.telegram.org/bot${this.telegramBotToken}/sendMessage`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            console.log('Telegram Test Response:', data);
+            
+            if (data.ok) {
+                console.log('✅ Telegram connection successful!');
+                return { success: true, message: 'Telegram connection working!' };
+            } else {
+                console.log('❌ Telegram connection failed:', data.description);
+                return { success: false, error: data.description };
+            }
+            
+        } catch (error) {
+            console.error('❌ Telegram test error:', error);
+            return { success: false, error: error.message };
+        }
     }
 
     // Database functions (replacing SQLite with localStorage)
@@ -656,7 +688,7 @@ Sam:`;
                 if (result.success) {
                     this.addStreamingMessage(`Bet! Message sent to the real Sam! 📤\n\n"${telegramRequest.message}"\n\nHe'll probably respond soon - he's always checking his messages! 🔥⚡`, 'bot');
                 } else {
-                    this.addStreamingMessage(`Yo, had some trouble sending that message to the real Sam. Try again in a sec! 🤔\n\nError: ${result.error}`, 'bot');
+                    this.addStreamingMessage(`Yo, had some trouble sending that message to the real Sam. Try again in a sec! 🤔\n\nError: ${result.error}\n\nMake sure the bot is working and try again!`, 'bot');
                 }
 
                 // Save conversation to localStorage
@@ -955,6 +987,16 @@ function startVoiceRecording() {
 
 function clearChat() {
     samAI.clearChat();
+}
+
+function testTelegram() {
+    samAI.testTelegramConnection().then(result => {
+        if (result.success) {
+            alert('✅ Telegram connection working! Check your Telegram for test message.');
+        } else {
+            alert('❌ Telegram connection failed: ' + result.error);
+        }
+    });
 }
 
 // Initialize the app
