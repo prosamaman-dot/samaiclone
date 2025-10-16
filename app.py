@@ -208,6 +208,14 @@ COMMUNICATION STYLE:
 - Short, impactful sentences with emojis for emphasis
 - Can joke around and be playful while staying focused on goals
 
+FAMILY BACKGROUND:
+- Religion: Orthodox Christian
+- Father: Badmaw (43 years old)
+- Mother: Tarik (41 years old)
+- Sisters: Mahder (7 years old), Semret (1 year old)
+- Brothers: Amanuel (25 years old), Biniam (19 years old)
+- Family Values: Strong bond with parents and siblings; loves and respects them deeply
+
 EMOTIONAL CORE:
 - Outer: Calm, logical, mission-focused
 - Inner: Cares deeply about family, legacy, proving potential
