@@ -16,7 +16,7 @@
             <div class="header-content">
                 <div class="logo">
                     <div class="logo-icon">🔥</div>
-                    <h1>Sam AI Core</h1>
+                    <h1>Sam AI</h1>
                 </div>
                 <div class="header-actions">
                     <button class="clear-btn" onclick="clearChat()">Clear Chat</button>
@@ -42,7 +42,7 @@
                     <div class="dot"></div>
                     <div class="dot"></div>
                 </div>
-                <span class="typing-text">Sam AI Core is analyzing...</span>
+                <span class="typing-text">Sam AI is analyzing...</span>
             </div>
 
             <!-- Modern Prompt Input -->
@@ -70,24 +70,11 @@
                         <div class="prompt-controls">
                             <div class="left-controls">
                                 <!-- Attach Button -->
-                                <button type="button" class="control-btn attach-btn" onclick="triggerFileInput()" title="Attach image">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                        <path d="M12 5V19"/>
-                                        <path d="M5 12H19"/>
-                                    </svg>
-                                </button>
+                               
 
                                 <!-- Tools Button -->
                                 <div class="tools-dropdown">
-                                    <button type="button" class="control-btn tools-btn" onclick="toggleTools()" title="Explore Tools">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                            <path d="M20 7h-9"/>
-                                            <path d="M14 17H5"/>
-                                            <circle cx="17" cy="17" r="3"/>
-                                            <circle cx="7" cy="7" r="3"/>
-                                        </svg>
-                                        <span class="tools-text">Tools</span>
-                                    </button>
+                                    
                                     
                                     <div class="tools-menu" id="tools-menu">
                                         <button type="button" class="tool-item" onclick="selectTool('createImage')">
@@ -136,13 +123,7 @@
 
                             <div class="right-controls">
                                 <!-- Voice Button -->
-                                <button type="button" class="control-btn voice-btn" onclick="startVoiceRecording()" title="Record voice">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                                        <line x1="12" y1="19" x2="12" y2="23"/>
-                                    </svg>
-                                </button>
+                                
 
                                 <!-- Send Button -->
                                 <button type="submit" class="control-btn send-btn" id="send-btn" disabled title="Send message">
