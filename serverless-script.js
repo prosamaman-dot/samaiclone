@@ -73,7 +73,26 @@ class SamAICoreServerless {
             setTimeout(() => {
                 this.showUserInfoPopup();
             }, 500);
+        } else if (this.userInfo) {
+            // User has already provided info, show welcome message
+            this.showPersonalizedWelcome(this.userInfo.name, this.userInfo.age);
+        } else {
+            // Returning user without info, show basic welcome
+            this.showBasicWelcome();
         }
+    }
+
+    showBasicWelcome() {
+        const chatMessages = document.getElementById('chat-messages');
+        chatMessages.innerHTML = `
+            <div class="welcome-message">
+                <div class="welcome-icon">
+                    <img src="sam-avatar.png" alt="Sam AI" class="avatar-img">
+                </div>
+                <h2>Welcome to Sam AI</h2>
+                <p>Ready to chat with Sam AI!</p>
+            </div>
+        `;
     }
 
     showUserInfoPopup() {
@@ -82,6 +101,7 @@ class SamAICoreServerless {
         overlay.className = 'user-info-overlay';
         overlay.innerHTML = `
             <div class="user-info-popup">
+                <button class="popup-close-btn" onclick="this.closest('.user-info-overlay').remove()">×</button>
                 <div class="popup-header">
                     <h3>Welcome to Sam AI! 👋</h3>
                     <p>Let me get to know you better</p>
@@ -157,9 +177,21 @@ class SamAICoreServerless {
 
     showPersonalizedWelcome(name, age) {
         const chatMessages = document.getElementById('chat-messages');
-        const welcomeMessage = chatMessages.querySelector('.welcome-message');
         
-        if (welcomeMessage) {
+        // Create welcome message if it doesn't exist
+        let welcomeMessage = chatMessages.querySelector('.welcome-message');
+        if (!welcomeMessage) {
+            welcomeMessage = document.createElement('div');
+            welcomeMessage.className = 'welcome-message';
+            welcomeMessage.innerHTML = `
+                <div class="welcome-icon">
+                    <img src="sam-avatar.png" alt="Sam AI" class="avatar-img">
+                </div>
+                <h2>Welcome ${name}! 👋</h2>
+                <p>Ready to chat with Sam AI!</p>
+            `;
+            chatMessages.appendChild(welcomeMessage);
+        } else {
             const welcomeText = welcomeMessage.querySelector('h2');
             if (welcomeText) {
                 welcomeText.textContent = `Welcome ${name}! 👋`;
@@ -1081,15 +1113,17 @@ Sam:`;
         if (confirm('Are you sure you want to clear the chat history?')) {
             this.clearConversationHistory();
             
-            // Clear the chat UI
+            // Clear the chat UI and show welcome message
             const chatMessages = document.getElementById('chat-messages');
+            const userName = this.userInfo?.name || '';
+            
             chatMessages.innerHTML = `
                 <div class="welcome-message">
                     <div class="welcome-icon">
                         <img src="sam-avatar.png" alt="Sam AI" class="avatar-img">
                     </div>
-                    <h2>Welcome to Sam AI</h2>
-                   
+                    <h2>${userName ? `Welcome back ${userName}! 👋` : 'Welcome to Sam AI'}</h2>
+                    <p>Ready to chat with Sam AI!</p>
                 </div>
             `;
         }

@@ -388,6 +388,30 @@ html, body {
     width: 90%;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
     animation: popupSlideIn 0.3s ease-out;
+    position: relative;
+}
+
+.popup-close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: #888888;
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.popup-close-btn:hover {
+    background: #333333;
+    color: #ffffff;
 }
 
 @keyframes popupSlideIn {
