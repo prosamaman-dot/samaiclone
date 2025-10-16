@@ -63,8 +63,15 @@ class SamAICoreServerless {
     }
 
     checkFirstVisit() {
-        if (!this.userInfo) {
-            this.showUserInfoPopup();
+        // Check if this is the first visit
+        const hasVisited = localStorage.getItem('sam_ai_has_visited');
+        if (!hasVisited && !this.userInfo) {
+            // Mark as visited immediately to prevent multiple popups
+            localStorage.setItem('sam_ai_has_visited', 'true');
+            // Show popup after a short delay to ensure page is loaded
+            setTimeout(() => {
+                this.showUserInfoPopup();
+            }, 500);
         }
     }
 
@@ -129,6 +136,22 @@ class SamAICoreServerless {
 
         // Focus on name input
         setTimeout(() => nameInput.focus(), 100);
+
+        // Close popup when clicking outside
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                document.body.removeChild(overlay);
+            }
+        });
+
+        // Close popup with Escape key
+        const handleEscape = (e) => {
+            if (e.key === 'Escape') {
+                document.body.removeChild(overlay);
+                document.removeEventListener('keydown', handleEscape);
+            }
+        };
+        document.addEventListener('keydown', handleEscape);
     }
 
     showPersonalizedWelcome(name, age) {
