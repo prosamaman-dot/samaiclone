@@ -609,8 +609,8 @@ Sam:`;
                 
                 currentIndex++;
                 
-                // Smooth scroll to follow the text as it appears
-                this.scrollToLatestMessage();
+                // Smooth scroll to follow the typing cursor
+                this.scrollToTypingCursor();
                 
                 // Variable delay based on word length and punctuation
                 const currentWord = words[currentIndex - 1];
@@ -682,8 +682,34 @@ Sam:`;
             const latestMessage = messages[messages.length - 1];
             latestMessage.scrollIntoView({ 
                 behavior: 'smooth',
-                block: 'end'
+                block: 'nearest',
+                inline: 'nearest'
             });
+        }
+    }
+
+    scrollToTypingCursor() {
+        const chatMessages = document.getElementById('chat-messages');
+        const typingCursor = chatMessages.querySelector('.typing-cursor');
+        if (typingCursor) {
+            // Get the position of the typing cursor
+            const cursorRect = typingCursor.getBoundingClientRect();
+            const chatRect = chatMessages.getBoundingClientRect();
+            
+            // Check if cursor is visible in the chat area
+            const isVisible = cursorRect.top >= chatRect.top && cursorRect.bottom <= chatRect.bottom;
+            
+            if (!isVisible) {
+                // If cursor is not visible, scroll to it smoothly
+                typingCursor.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'center',
+                    inline: 'nearest'
+                });
+            }
+        } else {
+            // Fallback to latest message if no cursor found
+            this.scrollToLatestMessage();
         }
     }
 
