@@ -78,93 +78,13 @@
                             maxlength="4000"
                         ></textarea>
 
-                        <!-- Bottom Controls -->
-                        <div class="prompt-controls">
-                            <div class="left-controls">
-                                <!-- Attach Button -->
-                                <button type="button" class="control-btn attach-btn" onclick="triggerFileInput()" title="Attach image">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                        <path d="M12 5V19"/>
-                                        <path d="M5 12H19"/>
-                                    </svg>
-                                </button>
-
-                                <!-- Tools Button -->
-                                <div class="tools-dropdown">
-                                    <button type="button" class="control-btn tools-btn" onclick="toggleTools()" title="Explore Tools">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                            <path d="M20 7h-9"/>
-                                            <path d="M14 17H5"/>
-                                            <circle cx="17" cy="17" r="3"/>
-                                            <circle cx="7" cy="7" r="3"/>
-                                        </svg>
-                                        <span class="tools-text">Tools</span>
-                                    </button>
-                                    
-                                    <div class="tools-menu" id="tools-menu">
-                                        <button type="button" class="tool-item" onclick="selectTool('createImage')">
-                                            <svg width="16" height="16" viewBox="0 0 512 512" fill="currentColor">
-                                                <path d="M141.176,324.641l25.323,17.833c7.788,5.492,17.501,7.537,26.85,5.67c9.35-1.877,17.518-7.514,22.597-15.569l22.985-36.556l-78.377-55.222l-26.681,33.96c-5.887,7.489-8.443,17.081-7.076,26.511C128.188,310.69,133.388,319.158,141.176,324.641z"/>
-                                            </svg>
-                                            <span>Create an image</span>
-                                        </button>
-                                        <button type="button" class="tool-item" onclick="selectTool('searchWeb')">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                                <circle cx="12" cy="12" r="10"/>
-                                                <path d="M2 12h20"/>
-                                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                                            </svg>
-                                            <span>Search the web</span>
-                                        </button>
-                                        <button type="button" class="tool-item" onclick="selectTool('writeCode')">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
-                                                <path d="m15 5 4 4"/>
-                                            </svg>
-                                            <span>Write or code</span>
-                                        </button>
-                                        <button type="button" class="tool-item" onclick="selectTool('deepResearch')">
-                                            <svg width="16" height="16" viewBox="0 0 512 512" fill="currentColor">
-                                                <path d="M452.425,202.575l-38.269-23.11c-1.266-10.321-5.924-18.596-13.711-21.947l-86.843-52.444l-0.275,0.598c-3.571-7.653-9.014-13.553-16.212-16.668L166.929,10.412l-0.236,0.543v-0.016c-3.453-2.856-7.347-5.239-11.594-7.08C82.569-10.435,40.76,14.5,21.516,59.203C2.275,103.827,12.82,151.417,45.142,165.36c4.256,1.826,8.669,3.005,13.106,3.556l-0.19,0.464l146.548,40.669c7.19,3.107,15.206,3.004,23.229,0.37l-0.236,0.566L365.55,238.5c7.819,3.366,17.094,1.125,25.502-5.082l42.957,11.909c7.67,3.312,18.014-3.548,23.104-15.362C462.202,218.158,460.11,205.894,452.425,202.575z"/>
-                                            </svg>
-                                            <span>Run deep research</span>
-                                            <span class="tool-extra">5 left</span>
-                                        </button>
-                                        <button type="button" class="tool-item" onclick="selectTool('thinkLonger')">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path d="M12 7C9.23858 7 7 9.23858 7 12C7 13.3613 7.54402 14.5955 8.42651 15.4972C8.77025 15.8484 9.05281 16.2663 9.14923 16.7482L9.67833 19.3924C9.86537 20.3272 10.6862 21 11.6395 21H12.3605C13.3138 21 14.1346 20.3272 14.3217 19.3924L14.8508 16.7482C14.9472 16.2663 15.2297 15.8484 15.5735 15.4972C16.456 14.5955 17 13.3613 17 12C17 9.23858 14.7614 7 12 7Z"/>
-                                            </svg>
-                                            <span>Think for longer</span>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <!-- Active Tool Display -->
-                                <div class="active-tool" id="active-tool" style="display: none;">
-                                    <span class="tool-name" id="active-tool-name"></span>
-                                    <button type="button" class="remove-tool" onclick="removeTool()">×</button>
-                                </div>
-                            </div>
-
-                            <div class="right-controls">
-                                <!-- Voice Button -->
-                                <button type="button" class="control-btn voice-btn" onclick="startVoiceRecording()" title="Record voice">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                                        <line x1="12" y1="19" x2="12" y2="23"/>
-                                    </svg>
-                                </button>
-
-                                <!-- Send Button -->
-                                <button type="submit" class="control-btn send-btn" id="send-btn" disabled title="Send message">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M12 5.25L12 18.75"/>
-                                        <path d="M18.75 12L12 5.25L5.25 12"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
+                        <!-- Send Button -->
+                        <button type="submit" class="send-btn" id="send-btn" disabled title="Send message">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5.25L12 18.75"/>
+                                <path d="M18.75 12L12 5.25L5.25 12"/>
+                            </svg>
+                        </button>
                     </div>
                 </form>
             </div>
