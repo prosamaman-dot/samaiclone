@@ -788,6 +788,119 @@ body {
     object-fit: cover;
 }
 
+/* User Info Popup */
+.user-info-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    backdrop-filter: blur(5px);
+}
+
+.user-info-popup {
+    background: #1a1a1a;
+    border: 1px solid #333333;
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: var(--shadow-xl);
+    animation: popupSlideIn 0.3s ease;
+}
+
+@keyframes popupSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.popup-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.popup-header h3 {
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.popup-header p {
+    color: #cccccc;
+    font-size: 1rem;
+}
+
+.popup-content {
+    margin-bottom: 1.5rem;
+}
+
+.input-group {
+    margin-bottom: 1rem;
+}
+
+.input-group label {
+    display: block;
+    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.75rem;
+    background: #000000;
+    border: 1px solid #333333;
+    border-radius: var(--radius);
+    color: #ffffff;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(16, 163, 127, 0.1);
+}
+
+.input-group input::placeholder {
+    color: #666666;
+}
+
+.popup-actions {
+    text-align: center;
+}
+
+.save-btn {
+    background: var(--accent-color);
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.save-btn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
 /* Animation Classes */
 .fade-in {
     animation: fadeIn 0.3s ease;

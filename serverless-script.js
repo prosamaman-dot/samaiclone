@@ -9,14 +9,17 @@ class SamAICoreServerless {
         this.imagePreview = null;
         this.toolsMenuOpen = false;
         this.geminiApiKey = 'AIzaSyB7nFWKcGw6eN1xjvHkDLpA4BEiOEaz6YU'; // Replace with your actual API key
+        this.userInfo = null;
         
         this.init();
     }
 
     init() {
         this.initSession();
+        this.loadUserInfo();
         this.setupEventListeners();
         this.loadConversationHistory();
+        this.checkFirstVisit();
     }
 
     // Session Management
@@ -34,6 +37,108 @@ class SamAICoreServerless {
             const v = c == 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
         });
+    }
+
+    // User Info Management
+    loadUserInfo() {
+        try {
+            const userInfo = localStorage.getItem('sam_ai_user_info');
+            this.userInfo = userInfo ? JSON.parse(userInfo) : null;
+        } catch (error) {
+            console.error('Error loading user info:', error);
+            this.userInfo = null;
+        }
+    }
+
+    saveUserInfo(name, age) {
+        try {
+            this.userInfo = { name, age };
+            localStorage.setItem('sam_ai_user_info', JSON.stringify(this.userInfo));
+            console.log('User info saved:', this.userInfo);
+        } catch (error) {
+            console.error('Error saving user info:', error);
+        }
+    }
+
+    checkFirstVisit() {
+        if (!this.userInfo) {
+            this.showUserInfoPopup();
+        }
+    }
+
+    showUserInfoPopup() {
+        // Create popup overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'user-info-overlay';
+        overlay.innerHTML = `
+            <div class="user-info-popup">
+                <div class="popup-header">
+                    <h3>Welcome to Sam AI! 👋</h3>
+                    <p>Let me get to know you better</p>
+                </div>
+                <div class="popup-content">
+                    <div class="input-group">
+                        <label for="user-name">What's your name?</label>
+                        <input type="text" id="user-name" placeholder="Enter your name" maxlength="50">
+                    </div>
+                    <div class="input-group">
+                        <label for="user-age">How old are you?</label>
+                        <input type="number" id="user-age" placeholder="Enter your age" min="1" max="120">
+                    </div>
+                </div>
+                <div class="popup-actions">
+                    <button id="save-user-info" class="save-btn">Let's Chat! 🚀</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        // Add event listeners
+        const saveBtn = document.getElementById('save-user-info');
+        const nameInput = document.getElementById('user-name');
+        const ageInput = document.getElementById('user-age');
+
+        const saveUserInfo = () => {
+            const name = nameInput.value.trim();
+            const age = parseInt(ageInput.value);
+
+            if (name && age && age > 0) {
+                this.saveUserInfo(name, age);
+                document.body.removeChild(overlay);
+                
+                // Show welcome message with user's name
+                this.showPersonalizedWelcome(name, age);
+            } else {
+                alert('Please enter both your name and a valid age!');
+            }
+        };
+
+        saveBtn.addEventListener('click', saveUserInfo);
+        
+        // Allow Enter key to save
+        [nameInput, ageInput].forEach(input => {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    saveUserInfo();
+                }
+            });
+        });
+
+        // Focus on name input
+        setTimeout(() => nameInput.focus(), 100);
+    }
+
+    showPersonalizedWelcome(name, age) {
+        const chatMessages = document.getElementById('chat-messages');
+        const welcomeMessage = chatMessages.querySelector('.welcome-message');
+        
+        if (welcomeMessage) {
+            const welcomeText = welcomeMessage.querySelector('h2');
+            if (welcomeText) {
+                welcomeText.textContent = `Welcome ${name}! 👋`;
+            }
+        }
     }
 
     // Event Listeners
@@ -267,7 +372,12 @@ class SamAICoreServerless {
             }
 
             // Create the prompt for Sam AI Core
-            const prompt = `You are Sam AI Core, the digital clone of Samuel - a 16-year-old independent builder, trader, and self-taught developer who refuses to settle.
+            let userContext = "";
+            if (this.userInfo) {
+                userContext = `\nCURRENT USER INFO:\n- Name: ${this.userInfo.name}\n- Age: ${this.userInfo.age}\n- Use their name and age to be friendly and personal in your responses. Address them by name when appropriate.\n`;
+            }
+
+            const prompt = `You are Sam AI Core, the digital clone of Samuel - a 16-year-old independent builder, trader, and self-taught developer who refuses to settle.${userContext}
 
 CORE IDENTITY:
 - Name: Samuel (Sam AI)
