@@ -609,8 +609,8 @@ Sam:`;
                 
                 currentIndex++;
                 
-                // Smooth scroll to bottom with each word
-                this.scrollToBottom();
+                // Smooth scroll to follow the text as it appears
+                this.scrollToLatestMessage();
                 
                 // Variable delay based on word length and punctuation
                 const currentWord = words[currentIndex - 1];
@@ -632,7 +632,7 @@ Sam:`;
                 // Remove typing cursor when done
                 element.innerHTML = this.formatMessage(text);
                 // Final scroll to ensure we're at the bottom
-                this.scrollToBottom();
+                this.scrollToLatestMessage();
             }
         };
         
@@ -673,6 +673,18 @@ Sam:`;
             top: chatMessages.scrollHeight,
             behavior: 'smooth'
         });
+    }
+
+    scrollToLatestMessage() {
+        const chatMessages = document.getElementById('chat-messages');
+        const messages = chatMessages.querySelectorAll('.message');
+        if (messages.length > 0) {
+            const latestMessage = messages[messages.length - 1];
+            latestMessage.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'end'
+            });
+        }
     }
 
     // Conversation history
