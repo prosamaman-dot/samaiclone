@@ -616,15 +616,11 @@ Sam:`;
             const chatMessages = document.getElementById('chat-messages');
             chatMessages.innerHTML = `
                 <div class="welcome-message">
-                    <div class="welcome-icon">🚀</div>
-                    <h2>Welcome to Sam AI Core</h2>
-                    <p>Yo, I'm Sam AI Core - Samuel's digital clone! 😄 16, independent builder, trader, self-taught developer who refuses to settle! 💯 Mission: financial freedom through skill, discipline, and technology! 🚀 "If I can build it, I can own it." What's the problem we're solving? 🤔</p>
-                    <div class="suggestion-chips">
-                        <button class="chip" onclick="sendSuggestion('How do you make $15-20 daily trading?')">Daily trading strategy 📈</button>
-                        <button class="chip" onclick="sendSuggestion('Help me build a profitable web app')">Build web app 💻</button>
-                        <button class="chip" onclick="sendSuggestion('Your millionaire plan')">Millionaire plan 💰</button>
-                        <button class="chip" onclick="sendSuggestion('Teach me Python/React')">Python/React 🐍</button>
+                    <div class="welcome-icon">
+                        <img src="sam-avatar.png" alt="Sam AI" class="avatar-img">
                     </div>
+                    <h2>Welcome to Sam AI</h2>
+                   
                 </div>
             `;
         }

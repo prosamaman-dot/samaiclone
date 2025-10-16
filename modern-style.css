@@ -89,6 +89,12 @@ body {
 
 .logo-icon {
     font-size: 1.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 
 .logo h1 {
@@ -164,6 +170,13 @@ body {
 .welcome-icon {
     font-size: 3rem;
     margin-bottom: 1rem;
+    width: 4rem;
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin: 0 auto 1rem auto;
 }
 
 .welcome-message h2 {
@@ -765,6 +778,14 @@ body {
 /* Streaming Text Animation */
 .streaming-text {
     position: relative;
+}
+
+/* Avatar Image Styling */
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 /* Animation Classes */
