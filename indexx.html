@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sam AI Chatbot</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-robot"></i>
+                    <h1>Sam AI</h1>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-clear" onclick="clearChat()" title="Clear Chat">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <div class="status-indicator" id="status">
+                        <i class="fas fa-circle"></i>
+                        <span>Online</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Chat Container -->
+        <div class="chat-container">
+            <div class="chat-messages" id="chat-messages">
+                <div class="welcome-message">
+                    <div class="welcome-icon">
+                        <i class="fas fa-sparkles"></i>
+                    </div>
+                    <h2>Welcome to Sam AI Core 🔥</h2>
+                    <p>Yo, I'm Sam AI Core - Samuel's digital clone! 😄 16, independent builder, trader, self-taught developer who refuses to settle! 💯 Mission: financial freedom through skill, discipline, and technology! 🚀 "If I can build it, I can own it." What's the problem we're solving? 🤔</p>
+                    <div class="suggestion-chips">
+                        <button class="chip" onclick="sendSuggestion('How do you make $15-20 daily trading?')">Daily trading strategy 📈</button>
+                        <button class="chip" onclick="sendSuggestion('Help me build a profitable web app')">Build web app 💻</button>
+                        <button class="chip" onclick="sendSuggestion('Your millionaire plan')">Millionaire plan 💰</button>
+                        <button class="chip" onclick="sendSuggestion('Teach me Python/React')">Python/React 🐍</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Typing Indicator -->
+            <div class="typing-indicator" id="typing-indicator" style="display: none;">
+                <div class="typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <span class="typing-text">Sam AI Core is analyzing...</span>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <textarea 
+                        id="message-input" 
+                        placeholder="Ask me anything..." 
+                        rows="1"
+                        maxlength="2000"
+                    ></textarea>
+                    <button class="send-button" id="send-button" onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div class="input-footer">
+                    <span class="char-count" id="char-count">0/2000</span>
+                    <span class="powered-by">Sam AI Core - Digital Clone</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let sessionId = null;
+        let isTyping = false;
+
+        // Initialize session
+        function initSession() {
+            sessionId = localStorage.getItem('sam_ai_session_id');
+            if (!sessionId) {
+                sessionId = generateUUID();
+                localStorage.setItem('sam_ai_session_id', sessionId);
+            }
+            // Load conversation history
+            loadConversationHistory();
+        }
+
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        // Load conversation history from database
+        async function loadConversationHistory() {
+            try {
+                const response = await fetch(`/api/history/${sessionId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.history && data.history.length > 0) {
+                        // Clear welcome message
+                        const chatMessages = document.getElementById('chat-messages');
+                        chatMessages.innerHTML = '';
+                        
+                        // Load conversation history
+                        data.history.forEach(msg => {
+                            if (msg.role === 'user') {
+                                addMessage(msg.content, 'user');
+                            } else {
+                                addMessage(msg.content, 'bot');
+                            }
+                        });
+                        
+                        console.log(`Loaded ${data.history.length} messages from history`);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading conversation history:', error);
+            }
+        }
+
+        function showTypingIndicator() {
+            if (isTyping) return;
+            isTyping = true;
+            document.getElementById('typing-indicator').style.display = 'flex';
+            scrollToBottom();
+        }
+
+        function hideTypingIndicator() {
+            isTyping = false;
+            document.getElementById('typing-indicator').style.display = 'none';
+        }
+
+        function scrollToBottom() {
+            const chatMessages = document.getElementById('chat-messages');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function updateCharCount() {
+            const input = document.getElementById('message-input');
+            const count = document.getElementById('char-count');
+            count.textContent = `${input.value.length}/2000`;
+        }
+
+        function autoResizeTextarea() {
+            const textarea = document.getElementById('message-input');
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('message-input');
+            const message = input.value.trim();
+            
+            if (!message || isTyping) return;
+
+            // Hide welcome message
+            const welcomeMessage = document.querySelector('.welcome-message');
+            if (welcomeMessage) {
+                welcomeMessage.style.display = 'none';
+            }
+
+            // Add user message
+            addMessage(message, 'user');
+            input.value = '';
+            autoResizeTextarea();
+            updateCharCount();
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        session_id: sessionId
+                    })
+                });
+
+                hideTypingIndicator();
+
+                if (response.ok) {
+                    const data = await response.json();
+                    addMessage(data.reply, 'assistant', data);
+                } else {
+                    const errorData = await response.json();
+                    addMessage(errorData.reply || 'Sorry, something went wrong. Please try again.', 'assistant', null, true);
+                }
+            } catch (error) {
+                hideTypingIndicator();
+                addMessage('Connection error. Please check your internet and try again.', 'assistant', null, true);
+                console.error('Error:', error);
+            }
+        }
+
+        function addMessage(content, sender, metadata = null, isError = false) {
+            const chatMessages = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message ${isError ? 'error' : ''}`;
+
+            const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+            if (sender === 'user') {
+                messageDiv.innerHTML = `
+                    <div class="message-content">
+                        <div class="message-text">${escapeHtml(content)}</div>
+                        <div class="message-time">${timestamp}</div>
+                    </div>
+                    <div class="message-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                `;
+            } else {
+                let metadataHtml = '';
+                if (metadata && metadata.provider) {
+                    metadataHtml = `
+                        <div class="message-metadata">
+                            <span class="provider">${metadata.provider}</span>
+                            <span class="response-time">${metadata.response_time}s</span>
+                        </div>
+                    `;
+                }
+
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-text">${formatMessage(content)}</div>
+                        ${metadataHtml}
+                        <div class="message-time">${timestamp}</div>
+                    </div>
+                `;
+            }
+
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        function formatMessage(text) {
+            // Convert markdown-like formatting to HTML
+            return escapeHtml(text)
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code>$1</code>')
+                .replace(/\n/g, '<br>');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function sendSuggestion(text) {
+            document.getElementById('message-input').value = text;
+            sendMessage();
+        }
+
+        async function clearChat() {
+            if (confirm('Are you sure you want to clear the chat history?')) {
+                try {
+                    await fetch('/api/clear', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            session_id: sessionId
+                        })
+                    });
+                } catch (error) {
+                    console.error('Error clearing chat:', error);
+                }
+
+                // Clear UI
+                const chatMessages = document.getElementById('chat-messages');
+                chatMessages.innerHTML = `
+                    <div class="welcome-message">
+                        <div class="welcome-icon">
+                            <i class="fas fa-sparkles"></i>
+                        </div>
+                        <h2>Welcome to Sam AI Core 🔥</h2>
+                        <p>Yo, I'm Sam AI Core - Samuel's digital clone! 😄 16, independent builder, trader, self-taught developer who refuses to settle! 💯 Mission: financial freedom through skill, discipline, and technology! 🚀 "If I can build it, I can own it." What's the problem we're solving? 🤔</p>
+                        <div class="suggestion-chips">
+                            <button class="chip" onclick="sendSuggestion('How do you make $15-20 daily trading?')">Daily trading strategy 📈</button>
+                            <button class="chip" onclick="sendSuggestion('Help me build a profitable web app')">Build web app 💻</button>
+                            <button class="chip" onclick="sendSuggestion('Your millionaire plan')">Millionaire plan 💰</button>
+                            <button class="chip" onclick="sendSuggestion('Teach me Python/React')">Python/React 🐍</button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Event listeners
+        document.getElementById('message-input').addEventListener('input', function() {
+            autoResizeTextarea();
+            updateCharCount();
+        });
+
+        document.getElementById('message-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initSession();
+            updateCharCount();
+        });
+    </script>
+</body>
+</html>
