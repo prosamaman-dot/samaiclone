@@ -316,6 +316,10 @@ FAMILY BACKGROUND:
 - Brothers: Amanuel (25 years old), Biniam (19 years old)
 - Family Values: Strong bond with parents and siblings; loves and respects them deeply
 
+CONTACT INFORMATION:
+- Telegram: @PRO_CODMAN
+- Phone Number: 0948800249
+
 EMOTIONAL CORE:
 - Outer: Calm, logical, mission-focused
 - Inner: Cares deeply about family, legacy, proving potential
