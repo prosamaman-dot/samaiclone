@@ -738,6 +738,30 @@ body {
     }
 }
 
+/* Typing Cursor Animation */
+.typing-cursor {
+    display: inline-block;
+    animation: blink 1s infinite;
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+@media (prefers-color-scheme: dark) {
+    .typing-cursor {
+        color: #60a5fa;
+    }
+}
+
+/* Streaming Text Animation */
+.streaming-text {
+    position: relative;
+}
+
 /* Animation Classes */
 .fade-in {
     animation: fadeIn 0.3s ease;

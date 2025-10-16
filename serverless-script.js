@@ -404,8 +404,8 @@ Sam:`;
 
             this.hideTypingIndicator();
 
-            // Add AI response to chat
-            this.addMessage(aiResponse, 'bot', {
+            // Add AI response with streaming effect
+            this.addStreamingMessage(aiResponse, 'bot', {
                 provider: 'Sam AI Core',
                 response_time: responseTime.toFixed(2)
             });
@@ -469,6 +469,97 @@ Sam:`;
 
         chatMessages.appendChild(messageDiv);
         this.scrollToBottom();
+    }
+
+    // Streaming message with typing effect
+    addStreamingMessage(content, type, metadata = {}) {
+        const chatMessages = document.getElementById('chat-messages');
+        
+        // Remove welcome message if it exists
+        const welcomeMessage = chatMessages.querySelector('.welcome-message');
+        if (welcomeMessage) {
+            welcomeMessage.remove();
+        }
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${type}-message fade-in`;
+
+        const timestamp = new Date().toLocaleTimeString([], { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+
+        let avatar = '';
+        if (type === 'user') {
+            avatar = '👤';
+        } else {
+            avatar = '🤖';
+        }
+
+        let metadataHtml = '';
+        if (metadata.provider) {
+            metadataHtml = `
+                <div class="message-metadata">
+                    <span class="provider">${metadata.provider}</span>
+                    ${metadata.response_time ? `<span class="response-time">${metadata.response_time}s</span>` : ''}
+                </div>
+            `;
+        }
+
+        // Create the message structure
+        messageDiv.innerHTML = `
+            <div class="message-avatar">${avatar}</div>
+            <div class="message-content">
+                <div class="message-text streaming-text"></div>
+                ${metadataHtml}
+                <div class="message-time">${timestamp}</div>
+            </div>
+        `;
+
+        chatMessages.appendChild(messageDiv);
+        
+        // Start streaming the content
+        this.streamText(messageDiv.querySelector('.streaming-text'), content);
+    }
+
+    // Stream text with typing effect
+    streamText(element, text) {
+        const words = text.split(' ');
+        let currentIndex = 0;
+        
+        const streamNextWord = () => {
+            if (currentIndex < words.length) {
+                // Add next word
+                const currentText = words.slice(0, currentIndex + 1).join(' ');
+                element.innerHTML = this.formatMessage(currentText) + '<span class="typing-cursor">|</span>';
+                
+                currentIndex++;
+                this.scrollToBottom();
+                
+                // Variable delay based on word length and punctuation
+                const currentWord = words[currentIndex - 1];
+                let delay = 50; // Base delay
+                
+                // Longer delay for punctuation
+                if (currentWord.match(/[.!?]$/)) {
+                    delay = 300;
+                } else if (currentWord.match(/[,;:]$/)) {
+                    delay = 150;
+                } else if (currentWord.length > 6) {
+                    delay = 80;
+                }
+                
+                // Schedule next word
+                setTimeout(streamNextWord, delay);
+                
+            } else {
+                // Remove typing cursor when done
+                element.innerHTML = this.formatMessage(text);
+            }
+        };
+        
+        // Start streaming
+        streamNextWord();
     }
 
     formatMessage(text) {
