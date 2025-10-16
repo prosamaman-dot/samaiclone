@@ -12,6 +12,7 @@ class SamAICoreServerless {
         this.telegramBotToken = '8251103172:AAFt32H6rivvYddiEAlvjzD8HeWqAtKNdd8';
         this.telegramChatId = '6849840329';
         this.userInfo = null;
+        this.webSearchEnabled = true;
         
         this.init();
     }
@@ -427,6 +428,91 @@ class SamAICoreServerless {
         }
     }
 
+    // Web Search functionality for current information
+    async performWebSearch(query) {
+        try {
+            // Using DuckDuckGo Instant Answer API (free, no API key required)
+            const searchUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1`;
+            
+            const response = await fetch(searchUrl);
+            const data = await response.json();
+            
+            let searchResults = '';
+            
+            // Extract relevant information from DuckDuckGo response
+            if (data.Abstract) {
+                searchResults += `Current Information: ${data.Abstract}\n`;
+            }
+            
+            if (data.AbstractText) {
+                searchResults += `Details: ${data.AbstractText}\n`;
+            }
+            
+            if (data.RelatedTopics && data.RelatedTopics.length > 0) {
+                searchResults += `Related Information:\n`;
+                data.RelatedTopics.slice(0, 3).forEach((topic, index) => {
+                    if (topic.Text) {
+                        searchResults += `${index + 1}. ${topic.Text}\n`;
+                    }
+                });
+            }
+            
+            // If DuckDuckGo doesn't have good results, try a different approach
+            if (!searchResults.trim()) {
+                // Use a simple web search simulation for current year info
+                const currentYear = new Date().getFullYear();
+                if (query.toLowerCase().includes('year') || query.toLowerCase().includes('current')) {
+                    searchResults = `Current Year Information: We are currently in ${currentYear}. This is the most up-to-date year information available.`;
+                }
+            }
+            
+            return {
+                success: true,
+                results: searchResults.trim(),
+                source: 'Web Search'
+            };
+            
+        } catch (error) {
+            console.error('Web search error:', error);
+            return {
+                success: false,
+                error: error.message,
+                results: ''
+            };
+        }
+    }
+
+    // Check if query needs web search for current information
+    needsWebSearch(userMessage) {
+        const currentInfoKeywords = [
+            'current year', 'this year', '2025', 'today', 'now', 'current',
+            'latest', 'recent', 'new', 'up to date', 'current events',
+            'what year is it', 'what is the current year', 'current date',
+            'recent news', 'latest news', 'current information'
+        ];
+        
+        const lowerMessage = userMessage.toLowerCase();
+        
+        // Check if message contains current information keywords
+        for (const keyword of currentInfoKeywords) {
+            if (lowerMessage.includes(keyword)) {
+                return true;
+            }
+        }
+        
+        // Check for year-related questions
+        if (lowerMessage.includes('year') && (lowerMessage.includes('what') || lowerMessage.includes('current'))) {
+            return true;
+        }
+        
+        // Check for date-related questions
+        if (lowerMessage.includes('date') && (lowerMessage.includes('what') || lowerMessage.includes('current'))) {
+            return true;
+        }
+        
+        return false;
+    }
+
     // Database functions (replacing SQLite with localStorage)
     saveConversation(userMessage, aiResponse) {
         try {
@@ -491,7 +577,7 @@ class SamAICoreServerless {
     }
 
     // Google Gemini API Integration (Direct client-side calls)
-    async callGeminiAPI(userMessage, history, selectedTool, imageData) {
+    async callGeminiAPI(userMessage, history, selectedTool, imageData, webSearchResults = '') {
         try {
             // Build context from conversation history
             let context = "";
@@ -513,6 +599,12 @@ class SamAICoreServerless {
             let imageContext = "";
             if (imageData) {
                 imageContext = "\nIMPORTANT: The user has attached an image. Analyze and respond to the image content when relevant.\n";
+            }
+
+            // Add web search context if provided
+            let webSearchContext = "";
+            if (webSearchResults) {
+                webSearchContext = `\nIMPORTANT: Current information has been retrieved from web search. Use this information to provide accurate, up-to-date responses about current events, dates, and recent information.${webSearchResults}\n`;
             }
 
             // Create the prompt for Sam AI Core
@@ -646,8 +738,9 @@ CRITICAL INSTRUCTIONS - FOLLOW EXACTLY:
 - RESPOND EXACTLY as Samuel would in every single message
 - IMPORTANT: Vary your expressions and phrases - don't use the same words repeatedly in every response. Be natural and conversational.
 - CONTACT SHARING RULE: Only share Telegram (@PRO_CODMAN) and phone (0948800249) when users specifically request "deep conversation", "deep talk", "personal contact", "direct contact", "one-on-one chat", "private conversation", or similar phrases. DO NOT share contact info for casual conversations or general questions.
+- CURRENT INFORMATION RULE: When web search results are provided, use that current information to answer questions about recent events, current year, dates, and up-to-date topics. Always prioritize current information over your training data when available.
 
-${toolContext}${imageContext}${context}Human: ${userMessage}
+${toolContext}${imageContext}${webSearchContext}${context}Human: ${userMessage}
 
 Sam:`;
 
@@ -755,12 +848,22 @@ Sam:`;
         this.showTypingIndicator();
 
         try {
+            // Check if we need to perform web search for current information
+            let webSearchResults = '';
+            if (this.webSearchEnabled && this.needsWebSearch(message)) {
+                console.log('🔍 Performing web search for current information...');
+                const searchResult = await this.performWebSearch(message);
+                if (searchResult.success && searchResult.results) {
+                    webSearchResults = `\n\nCURRENT INFORMATION FROM WEB SEARCH:\n${searchResult.results}\n\nUse this current information to provide accurate, up-to-date responses.`;
+                }
+            }
+
             // Get conversation history
             const history = this.getConversationHistory(5);
             
-            // Call Gemini API directly
+            // Call Gemini API directly with web search results
             const startTime = Date.now();
-            const aiResponse = await this.callGeminiAPI(message, history, this.selectedTool, this.imagePreview);
+            const aiResponse = await this.callGeminiAPI(message, history, this.selectedTool, this.imagePreview, webSearchResults);
             const responseTime = (Date.now() - startTime) / 1000;
 
             this.hideTypingIndicator();
