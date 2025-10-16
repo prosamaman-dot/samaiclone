@@ -555,29 +555,9 @@ Sam:`;
             minute: '2-digit' 
         });
 
-        let avatar = '';
-        if (type === 'user') {
-            avatar = '👤';
-        } else {
-            avatar = '<img src="sam-avatar.png" alt="Sam AI" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">';
-        }
-
-        let metadataHtml = '';
-        if (metadata.provider) {
-            metadataHtml = `
-                <div class="message-metadata">
-                    <span class="provider">${metadata.provider}</span>
-                    ${metadata.response_time ? `<span class="response-time">${metadata.response_time}s</span>` : ''}
-                </div>
-            `;
-        }
-
         messageDiv.innerHTML = `
-            <div class="message-avatar">${avatar}</div>
             <div class="message-content">
                 <div class="message-text">${this.formatMessage(content)}</div>
-                ${metadataHtml}
-                <div class="message-time">${timestamp}</div>
             </div>
         `;
 
@@ -603,19 +583,10 @@ Sam:`;
             minute: '2-digit' 
         });
 
-        let avatar = '';
-        if (type === 'user') {
-            avatar = '👤';
-        } else {
-            avatar = '<img src="sam-avatar.png" alt="Sam AI" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">';
-        }
-
         // Create the message structure
         messageDiv.innerHTML = `
-            <div class="message-avatar">${avatar}</div>
             <div class="message-content">
                 <div class="message-text streaming-text"></div>
-                <div class="message-time">${timestamp}</div>
             </div>
         `;
 
