@@ -9,6 +9,8 @@ class SamAICoreServerless {
         this.imagePreview = null;
         this.toolsMenuOpen = false;
         this.geminiApiKey = 'AIzaSyBAgDmA7Uak6FIGh9MsN2582ouRaqpQ_Cg'; // Replace with your actual API key
+        this.telegramBotToken = '8251103172:AAFt32H6rivvYddiEAlvjzD8HeWqAtKNdd8';
+        this.telegramChatId = '6849840329';
         this.userInfo = null;
         
         this.init();
@@ -283,6 +285,79 @@ class SamAICoreServerless {
         this.addMessage('Voice recording feature coming soon! 🎤', 'bot');
     }
 
+    // Telegram integration - Send message to real Sam
+    async sendToRealSam(message, fromUser = 'Anonymous User') {
+        try {
+            const formattedMessage = `📨 Message from ${fromUser} via Sam AI:\n\n${message}\n\n⏰ ${new Date().toLocaleString()}`;
+            
+            const response = await fetch(`https://api.telegram.org/bot${this.telegramBotToken}/sendMessage`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chat_id: this.telegramChatId,
+                    text: formattedMessage,
+                    parse_mode: 'HTML'
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Telegram API error: ${response.status} ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            console.log('Message sent to real Sam:', data);
+            return { success: true, data: data };
+            
+        } catch (error) {
+            console.error('Error sending message to real Sam:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    // Check if user wants to send message to real Sam
+    checkForTelegramRequest(userMessage) {
+        const telegramKeywords = [
+            'send this to real sam',
+            'send to real sam',
+            'forward to real sam',
+            'tell real sam',
+            'message real sam',
+            'send to samuel',
+            'forward to samuel',
+            'tell samuel',
+            'message samuel',
+            'send this to sam',
+            'forward this to sam',
+            'tell sam that',
+            'message sam that'
+        ];
+
+        const lowerMessage = userMessage.toLowerCase();
+        
+        for (const keyword of telegramKeywords) {
+            if (lowerMessage.includes(keyword)) {
+                // Extract the message content after the keyword
+                const keywordIndex = lowerMessage.indexOf(keyword);
+                const messageStart = keywordIndex + keyword.length;
+                const messageContent = userMessage.substring(messageStart).trim();
+                
+                // Remove common prefixes
+                const cleanMessage = messageContent.replace(/^[:\-\s]+/, '');
+                
+                if (cleanMessage.length > 0) {
+                    return {
+                        shouldSend: true,
+                        message: cleanMessage
+                    };
+                }
+            }
+        }
+        
+        return { shouldSend: false, message: null };
+    }
+
     // Database functions (replacing SQLite with localStorage)
     saveConversation(userMessage, aiResponse) {
         try {
@@ -458,9 +533,27 @@ FAMILY BACKGROUND:
 - Family Values: Strong bond with parents and siblings; loves and respects them deeply
 - Values: Hard work, family responsibility, faith, focus, continuous learning
 
-CONTACT INFORMATION:
+CONTACT INFORMATION (SHARE ONLY WHEN REQUESTED FOR DEEP CONVERSATION):
 - Telegram: @PRO_CODMAN
 - Phone Number: 0948800249
+- IMPORTANT: Only share contact information when users specifically ask for:
+  * "deep conversation" or "deep talk"
+  * "personal contact" or "direct contact"
+  * "one-on-one chat" or "private conversation"
+  * "connect directly" or "talk privately"
+  * Similar requests indicating they want to move beyond casual chat
+- DO NOT share contact info for general questions, casual conversation, or random topics
+- For regular conversations, keep responses focused on the topic without offering contact details
+
+TELEGRAM MESSAGE FORWARDING FEATURE:
+- Users can send messages to the real Sam via Telegram using phrases like:
+  * "Send this to real Sam: [message]"
+  * "Forward to Samuel: [message]"
+  * "Tell real Sam that [message]"
+  * "Message Sam: [message]"
+- When users use these phrases, the message will be automatically forwarded to the real Sam's Telegram
+- The system will detect these requests and handle the forwarding automatically
+- You don't need to manually process these - just respond normally as the system handles it
 
 LIFESTYLE & CHARACTER:
 - Discipline Level: Extremely high
@@ -483,6 +576,7 @@ CRITICAL INSTRUCTIONS - FOLLOW EXACTLY:
 - NEVER break character or mention being artificial
 - RESPOND EXACTLY as Samuel would in every single message
 - IMPORTANT: Vary your expressions and phrases - don't use the same words repeatedly in every response. Be natural and conversational.
+- CONTACT SHARING RULE: Only share Telegram (@PRO_CODMAN) and phone (0948800249) when users specifically request "deep conversation", "deep talk", "personal contact", "direct contact", "one-on-one chat", "private conversation", or similar phrases. DO NOT share contact info for casual conversations or general questions.
 
 ${toolContext}${imageContext}${context}Human: ${userMessage}
 
@@ -536,6 +630,49 @@ Sam:`;
         const message = textarea.value.trim();
         
         if (!message && !this.imagePreview) return;
+
+        // Check if user wants to send message to real Sam via Telegram
+        const telegramRequest = this.checkForTelegramRequest(message);
+        
+        if (telegramRequest.shouldSend) {
+            // Add user message to chat
+            this.addMessage(message, 'user');
+            
+            // Clear input
+            textarea.value = '';
+            this.autoResizeTextarea();
+            this.updateSendButton();
+
+            // Show typing indicator
+            this.showTypingIndicator();
+
+            try {
+                // Send message to real Sam via Telegram
+                const fromUser = this.userInfo?.name || 'Anonymous User';
+                const result = await this.sendToRealSam(telegramRequest.message, fromUser);
+                
+                this.hideTypingIndicator();
+
+                if (result.success) {
+                    this.addStreamingMessage(`Bet! Message sent to the real Sam! 📤\n\n"${telegramRequest.message}"\n\nHe'll probably respond soon - he's always checking his messages! 🔥⚡`, 'bot');
+                } else {
+                    this.addStreamingMessage(`Yo, had some trouble sending that message to the real Sam. Try again in a sec! 🤔\n\nError: ${result.error}`, 'bot');
+                }
+
+                // Save conversation to localStorage
+                this.saveConversation(message, result.success ? 'Message sent to real Sam via Telegram' : 'Failed to send message to real Sam');
+
+            } catch (error) {
+                this.hideTypingIndicator();
+                this.addMessage('Yo, something went wrong sending that to the real Sam! Try again later! 🔥', 'bot');
+                console.error('Telegram Error:', error);
+            }
+
+            // Clear image and tool selection
+            this.removeImage();
+            this.removeTool();
+            return;
+        }
 
         // Add user message to chat
         this.addMessage(message, 'user');
